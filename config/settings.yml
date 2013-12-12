@@ -1,0 +1,8 @@
+production: &shared
+  geocode_key: asdf
+  google_maps_key: 'asdf'
+  secret_token: '484ce1b609642657d48f41348616ab8693c5877a4cb481637b02c85c932f755e45654b11387a719b84170442462f1a4aed4a03a8a7906f3ac70a0d172f1e4a9a'
+
+development:
+  <<: *shared
+
