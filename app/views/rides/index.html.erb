@@ -187,7 +187,7 @@
         zoom: 11,
         center: new google.maps.LatLng(<%=@latitude_avg%>, <%=@longitude_avg%>)
       }
-			map = new google.maps.Map($("#map"), mapOptions);
+			map = new google.maps.Map($("#map")[0], mapOptions);
 			geocoder = google.maps.Geocoder();
 			//map.addControl(new GLargeMapControl());
 			//map.enableScrollWheelZoom();

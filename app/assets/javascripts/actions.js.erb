@@ -139,6 +139,8 @@
         autoScroll: true
       });
 
+      locations[i]['infowindow'] = infowindow;
+
       google.maps.event.addListener(locations[i]['marker'], 'click', function() {
         infowindow.open(map,marker);
       });
@@ -241,7 +243,6 @@
 	function onMarkerOpen(i) {
 		document.getElementById("marker_longest").style.display="none";
 		document.getElementById("marker"+show[i]).style.display="block";
-		//limitHeight("marker"+show[i], 300);
 	}
 
 	function showMarker(i, id) {
@@ -258,7 +259,6 @@
 			}
 		}
 		document.getElementById("marker"+id).style.display="block";
-		//limitHeight("marker"+id, 300);
 	}
 
 	function count_shown(arr) {
@@ -333,7 +333,7 @@
 	}
 
 	function displayMessage(name) {
-		map.disableScrollWheelZoom();
+    map.setOptions({scrollwheel: false});
 		document.getElementById("message_block").style.display="block";
 		var msg=document.getElementById(name+"_message");
 		msg.style.display="block";
@@ -357,7 +357,7 @@
 	}
 
 	function hideMessage(name) {
-		map.enableScrollWheelZoom();
+		map.setOptions({scrollwheel: true});
 		document.getElementById(name+"_message").style.display="none";
 		document.getElementById("message_block").style.display="none";
 	}
@@ -376,70 +376,10 @@
 		parent.insertBefore(node, parent.firstChild);
 	}
 
-	/*var update_address_storage_type;
-	var update_address_storage_i;
-	function updateAddress(type, i) {
-		var info;
-		if (type == "driver") {
-			info=drivers[i];
-		} else {
-			info=riders[i];
-		}
-		document.getElementById("update_address_name").innerHTML=info['name']
-		document.getElementById("update_address_address1").value=info['address1'];
-		document.getElementById("update_address_address2").value=info['address2'];
-		document.getElementById("update_address_city").value=info['city'];
-		document.getElementById("update_address_state").value=info['state'];
-		document.getElementById("update_address_zip").value=info['zip'];
-		document.getElementById("update_address_rideID").value=info['id'];
-		update_address_storage_type=type;
-		update_address_storage_i=i;
-		displayMessage("update_address");
-	}
-
-	function updateAddressCallback(request) {
-		i=update_address_storage_i;
-		latlng=request.responseText.split(',');
-		var location=latlng[0]+" "+latlng[1];
-		var next;
-		if (location in locations) {
-			locations[location]['rides'].push({'type':update_address_storage_type, 'id':update_address_storage_i});
-			next=locations[location];
-		} else {
-			locations[location]['latitude']=latlng[0];
-			locations[location]['longitude']=latlng[1];
-			locations[location]['rides'][0]={'type':update_address_storage_type, 'id':update_address_storage_i};
-			locations[location]['marker']=new GMarker(new GLatLng(latlng[0], latlng[1]), {title: (update_Address_storage_type == "driver")?drivers[i]['name']:riders[i]['name'], zIndexProcess: doZIndex, icon: icon});
-			next=locations[location];
-		}
-		if (update_address_storage_type == "driver") {
-			drivers[i]['address1']=document.getElementById("update_address_address1").value;
-			drivers[i]['address2']=document.getElementById("update_address_address2").value;
-			drivers[i]['city']=document.getElementById("update_address_city").value;
-			drivers[i]['state']=document.getElementById("update_address_state").value;
-			drivers[i]['zip']=document.getElementById("update_address_zip").value;
-			drivers[i]['marker'].closeInfoWindow();
-			drivers[i]['marker']=next['marker'];
-			drivers[i]['location']=location;
-		} else {
-			riders[i]['address1']=document.getElementById("update_address_address1").value;
-			riders[i]['address2']=document.getElementById("update_address_address2").value;
-			riders[i]['city']=document.getElementById("update_address_city").value;
-			riders[i]['state']=document.getElementById("update_address_state").value;
-			riders[i]['zip']=document.getElementById("update_address_zip").value;
-			riders[i]['marker'].closeInfoWindow();
-			riders[i]['marker']=next['marker'];
-			riders[i]['location']=location;
-		}
-		updateMarkers();
-		hideMessage("update_address");
-	}*/
-
 	var lastOption="";
 	function showOption(name) {
 		// close all others
 		document.getElementById("options_box_departure_time").style.display="none";
-		//document.getElementById("options_box_special_cases").style.display="none";
 		document.getElementById("options_box_availability").style.display="none";
 		// reset borders
 		if (document.getElementById("options_box_departure_time_use1").checked == 1 || document.getElementById("options_box_departure_time_use2").checked == 1) {
@@ -447,11 +387,7 @@
 		} else {
 			document.getElementById("options_departure_time").style.backgroundColor="#ffffff";
 		}
-		/*if (document.getElementById("options_box_special_cases_show_special").checked != 1 || document.getElementById("options_box_special_cases_show_standard").checked != 1) {
-			document.getElementById("options_special_cases").style.backgroundColor="#bbffbb";
-		} else {
-			document.getElementById("options_special_cases").style.backgroundColor="#ffffff";
-		}*/
+
 		if (document.getElementById("options_box_availability_available").checked != 1 || document.getElementById("options_box_availability_assigned").checked != 1) {
 			document.getElementById("options_availability").style.backgroundColor="#bbffbb";
 		} else {
@@ -479,15 +415,7 @@
 		}
 		lastOption="";
 	}
-	/*function closeSpecialCases() {
-		document.getElementById("options_box_special_cases").style.display="none";
-		if (document.getElementById("options_box_special_cases_show_special").checked != 1 || document.getElementById("options_box_special_cases_show_standard").checked != 1) {
-			document.getElementById("options_special_cases").style.backgroundColor="#bbffbb";
-		} else {
-			document.getElementById("options_special_cases").style.backgroundColor="#ffffff";
-		}
-		lastOption="";
-	}*/
+
 	function closeAvailability() {
 		document.getElementById("options_box_availability").style.display="none";
 		if (document.getElementById("options_box_availability_available").checked != 1 || document.getElementById("options_box_availability_assigned").checked != 1) {
@@ -512,11 +440,6 @@
 		} else {
 			document.getElementById("options_availability").style.backgroundColor=(lastOption == "availability")?"#eeeeee":"#ffffff";
 		}
-		/*if (document.getElementById("options_box_special_cases_show_special").checked != 1 || document.getElementById("options_box_special_cases_show_standard").checked != 1) {
-			document.getElementById("options_special_cases").style.backgroundColor=(lastOption == "special_cases")?"#eeeeee":"#bbffbb";
-		} else {
-			document.getElementById("options_special_cases").style.backgroundColor=(lastOption == "special_cases")?"#eeeeee":"#ffffff";
-		}*/
 		for (var i in riders) {
 			document.getElementById("rider"+i).style.display="block";
 			riders[i]['show']=true;
@@ -571,34 +494,6 @@
 				}
 			}
 		}
-		/*if (document.getElementById("options_box_special_cases_show_special").checked != 1) {
-			for (var i in riders) {
-				if (riders[i]['special_info'] != "") {
-					document.getElementById("rider"+i).style.display="none";
-					riders[i]['show']=false;
-				}
-			}
-			for (var i in drivers) {
-				if (drivers[i]['special_info'] != "") {
-					document.getElementById("driver"+i).style.display="none";
-					drivers[i]['show']=false;
-				}
-			}
-		}*/
-		/*if (document.getElementById("options_box_special_cases_show_standard").checked != 1) {
-			for (var i in riders) {
-				if (riders[i]['special_info'] == "") {
-					document.getElementById("rider"+i).style.display="none";
-					riders[i]['show']=false;
-				}
-			}
-			for (var i in drivers) {
-				if (drivers[i]['special_info'] == "") {
-					document.getElementById("driver"+i).style.display="none";
-					drivers[i]['show']=false;
-				}
-			}
-		}*/
 		if (current_driver != -1) {
 			drivers[current_driver]['show']=true;
 			for (var i in drivers[current_driver]['riders']) {
@@ -622,10 +517,10 @@
 				}
 			}
 			if (!show) {
-				locations[i]['marker'].closeInfoWindow();
-				locations[i]['marker'].hide();
+				locations[i]['infowindow'].close();
+				locations[i]['marker'].setVisible(false);
 			} else {
-				locations[i]['marker'].show();
+				locations[i]['marker'].setVisible(true);
 			}
 		}
 		updateMarkers();
@@ -641,7 +536,6 @@
 			hour = "0"+hour;
 		}
 		departure_time1 = hour+":"+document.getElementById("options_box_departure_time_time1_minute").value;
-		//alert(departure_time1);
 		updateList();
 	}
 	function updateDepartureTime2(check) {
@@ -654,7 +548,6 @@
 			hour = "0"+hour;
 		}
 		departure_time2 = hour+":"+document.getElementById("options_box_departure_time_time2_minute").value;
-		//alert(departure_time2);
 		updateList();
 	}
 	function updateSpecialCases() {
@@ -667,7 +560,7 @@
 		if (current_driver != -1) {
 			unsetCurrentDriver();
 		}
-		drivers[i]['marker'].closeInfoWindow();
+		drivers[i]['infowindow'].close();
 		for (var j in drivers[i]['riders']) {
 			li=document.createElement("li");
 			li.innerHTML="<a href=\"javascript:map.setCenter(riders["+j+"]['marker'].getLatLng(), 15);showMarker(riders["+j+"]['location'], "+j+");\">"+riders[j]['name']+"</a> ("+riders[j]['city']+")";
@@ -694,7 +587,7 @@
 		}
 		empty("selected_driver");
 		empty("selected_riders");
-		drivers[current_driver]['marker'].closeInfoWindow();
+		drivers[current_driver]['infowindow'].close();
 		document.getElementById("drivers_none").style.display="block";
 		document.getElementById("drivers").style.top="175px";
 		current_driver=-1;
@@ -715,7 +608,7 @@
 						document.getElementById("driver"+j).innerHTML="<a href=\"javascript:map.setCenter(drivers["+j+"]['marker'].getLatLng(), 15);showMarker(drivers["+j+"]['location'], "+j+");\" ondblclick=\"double_click_driver("+j+");return false;\">"+drivers[j]['name']+"</a> ("+numProperties(drivers[j]['riders'])+"/"+drivers[j]['number_passengers']+")";
 						document.getElementById("driver_selected"+j).innerHTML="<a href=\"javascript:map.setCenter(drivers["+j+"]['marker'].getLatLng(), 15);showMarker(drivers["+j+"]['location'], "+j+");\">"+drivers[j]['name']+"</a> ("+numProperties(drivers[j]['riders'])+"/"+drivers[j]['number_passengers']+")";
 						riders[i]['driverID']=j;
-						riders[i]['marker'].closeInfoWindow();
+						riders[i]['infowindow'].close();
 						var img=document.createElement("img");
 						img.src="<%= asset_path('check.png')%>";
 						img.alt="Done";
@@ -743,8 +636,8 @@
 				delete drivers[old_driver]['riders'][i];
 				document.getElementById("driver"+old_driver).innerHTML="<a href=\"javascript:map.setCenter(drivers["+old_driver+"]['marker'].getLatLng(), 15);showMarker(drivers["+old_driver+"]['location'], "+old_driver+");\" ondblclick=\"double_click_driver("+old_driver+");return false;\">"+drivers[old_driver]['name']+"</a> ("+numProperties(drivers[old_driver]['riders'])+"/"+drivers[old_driver]['number_passengers']+")";
 				riders[i]['driverID']=0;
-				riders[i]['marker'].closeInfoWindow();
-				document.getElementById("rider"+i).innerHTML="<a href=\"javascript:map.setCenter(riders["+i+"]['marker'].getLatLng(), 15);showMarker(riders["+i+"]['location'], "+i+");\" ondblclick=\"double_click_rider("+i+");return false;\">"+riders[i]['name']+"</a> ("+riders[i]['city']+")";
+        riders[i]['infowindow'].close();
+        document.getElementById("rider"+i).innerHTML="<a href=\"javascript:map.setCenter(riders["+i+"]['marker'].getLatLng(), 15);showMarker(riders["+i+"]['location'], "+i+");\" ondblclick=\"double_click_rider("+i+");return false;\">"+riders[i]['name']+"</a> ("+riders[i]['city']+")";
 				if (old_driver == current_driver) {
 					setCurrentDriver(current_driver); // regenerate the list of selected riders
 					if (numProperties(drivers[current_driver]['riders']) == 0) {
