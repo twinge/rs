@@ -1,24 +1,78 @@
-h1{
-  font-weight:bold;
-  font-size:3em;
+$red : #ff0000;
+$light-red : #fd8b8e;
+
+html, body {
+  height: 100%
 }
-h2{
+
+h1, h2, h3, h4 {
   font-weight:bold;
+}
+
+h2 {
   font-size:1.8em;
   text-align:center;
   margin-bottom:.5em;
 }
-h3{
-  font-size:20px;
-  height:25px;
-  width:240px;
-  font-weight:bold;
-  background-color:#dddddd;
-  text-align:center;
-}
-h4{
+h4 {
   font-size:1.2em;
-  font-weight:bold;
+}
+
+header {
+  width: 100%;
+  background: #7a7a7a;
+  border-bottom: 1px solid #222;
+  height: 40px;
+  text-align: center;
+  h1 {
+    display: inline-block;
+    font-size: 1.5em;
+    padding: 10px;
+    color: white;
+  }
+}
+.nav--right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  .icon-link {
+    height: 26px;
+    display: inline-block;
+    padding: 7px;
+  }
+}
+
+.page-content {
+  position: absolute;
+  top: 48px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+}
+
+.person-list-container {
+  width: 244px;
+  border: 1px solid #000000;
+  overflow: auto;
+  height: 100%;
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+}
+.person-list-container-header {
+  padding: 6px 0;
+  border-bottom: 1px solid #000;
+  text-align: center;
+  background-color:#dddddd;
+}
+  .person-list-container-header--red {
+    background-color: $light-red;
+  }
+
+
+#map {
+  height: 100%;
+  background-color: #ebebeb;
 }
 /*#drivers{
   

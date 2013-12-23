@@ -1,28 +1,36 @@
 <div id="size_box"></div>
-<table style="position:absolute;top:5px;left:5px;height:25px;">
-	<tr>
-		<td style="padding:2px 10px;border:1px solid #000000;"><a href="javascript:showHide('legend');">Legend <img src="<%= asset_path "arrow.png" %>" alt="arrow" /></a></td>
-		<td style="padding:2px 10px;border:1px solid #000000;"><a href="http://wiki.uscm.org/display/CG/Conference+Registration+System+Ride+Share+Tool" target="_blank">Help?</a></td>
-	</tr>
-</table>
-<table id="legend" style="display:none;">
-	<tr>
-		<td><img src="<%= asset_path "AD.png" %>" alt="Available Driver" /></td>
-		<td>Available Driver</td>
-		<td><img src="<%= asset_path "AR.png" %>" alt="Available Rider" /></td>
-		<td>Available Rider</td>
-		<td><img src="<%= asset_path "selected.png" %>" alt="Selected" /></td>
-		<td>Selected Driver/Rider</td>
-	</tr>
-	<tr>
-		<td><img src="<%= asset_path "UD.png" %>" alt="Unavailable Driver" /></td>
-		<td>Driver with Full Car</td>
-		<td><img src="<%= asset_path "UR.png" %>" alt="Unavailable Rider" /></td>
-		<td>Assigned Rider</td>
-		<td><img src="<%= asset_path "AD_AR_UD_UR.png" %>" alt="Available Driver, Available Rider, Unavailable Driver, Unavailable Rider" /></td>
-		<td>Location with all four types</td>
-	</tr>
-</table>
+<header>
+	<h1>Rideshare Admin</h1>
+	<nav class="nav--right">
+		<a href="javascript:displayMessage('hidden_users');" title="This lists all of the people that are not included in RideShare, but have registered for the conference">Show Non-Participants</a>
+		<%= link_to fa_icon("print 2x"), "report", {title: "Printable Report", class: "icon-link"} %>
+		<%= link_to fa_icon("envelope 2x"), "email", {title: "Email Setup", class: "icon-link"} %>
+	</nav>
+	<table style="position:absolute;top:5px;left:5px;height:25px;">
+		<tr>
+			<td style="padding:2px 10px;border:1px solid #000000;"><a href="javascript:showHide('legend');">Legend <img src="<%= asset_path "arrow.png" %>" alt="arrow" /></a></td>
+			<td style="padding:2px 10px;border:1px solid #000000;"><a href="http://wiki.uscm.org/display/CG/Conference+Registration+System+Ride+Share+Tool" target="_blank">Help?</a></td>
+		</tr>
+	</table>
+	<table id="legend" style="display:none;">
+		<tr>
+			<td><img src="<%= asset_path "AD.png" %>" alt="Available Driver" /></td>
+			<td>Available Driver</td>
+			<td><img src="<%= asset_path "AR.png" %>" alt="Available Rider" /></td>
+			<td>Available Rider</td>
+			<td><img src="<%= asset_path "selected.png" %>" alt="Selected" /></td>
+			<td>Selected Driver/Rider</td>
+		</tr>
+		<tr>
+			<td><img src="<%= asset_path "UD.png" %>" alt="Unavailable Driver" /></td>
+			<td>Driver with Full Car</td>
+			<td><img src="<%= asset_path "UR.png" %>" alt="Unavailable Rider" /></td>
+			<td>Assigned Rider</td>
+			<td><img src="<%= asset_path "AD_AR_UD_UR.png" %>" alt="Available Driver, Available Rider, Unavailable Driver, Unavailable Rider" /></td>
+			<td>Location with all four types</td>
+		</tr>
+	</table>
+</header>
 <div id="message_block"></div>
 <div id="flash_message" class="message" style="width:600px;height:360px;">
 	<% if @help_rides.size > 0 %>
@@ -83,85 +91,93 @@
 	By default, only people who need attention are visible (i.e. drivers with empty spaces and riders with no ride), while people who don't need attention are hidden (i.e. drivers with full cars and riders with a ride). The "Show and Hide" link on the bottom left contains options for changing which riders/drivers are displayed. Similarly, people will be displayed based on departure time by using the "Departure Time" link below the lists - all departure times are shown by default.
 	<a href="javascript:hideMessage('filters_help');" class="message_exit" onmouseclick="hideMessage('filters_help');">X</a>
 </div>
-<h1 id="header" style="margin-left:auto;margin-right:auto;text-align:center;">Rideshare Admin</h1>
-<div style="position:absolute;top:5px;right:5px;">
-	<a href="/carpool/report" title="This produces a printable list of all of the people organized by drivers">Printable Report</a><br />
-	<a href="/carpool/email" title="This brings you to a page that allows you to set up an e-mail to notify everyone of their ride assignments">Email Setup</a><br />
-	<a href="javascript:displayMessage('hidden_users');" title="This lists all of the people that are not included in RideShare, but have registered for the conference">Show Non-Participants</a>
-</div>
-<div id="map" style="position:absolute;left:504px;right:5px;top:100px;bottom:30px;"></div>
-<h3 id="drivers_header" style="position:absolute;left:5px;top:100px;padding:2px;border:1px solid #000000;"><%=@drivers.size%> Drivers - <span id="spaces_remaining"><%=@spaces-@riders_done%></span>/<%=@spaces%> Seats</h3>
-<div id="drivers_none" style="position:absolute;left:5px;top:129px;padding:2px;border:1px solid #000000;background-color:#ffbbbb;text-align:center;width:240px;"><strong>No Driver Selected</strong><br /><a href="javascript:displayMessage('driver_help');"><strong>How do I select a driver?</strong></a></div>
-<div id="drivers" style="position:absolute;left:5px;top:175px;bottom:40px;width:244px;border:1px solid #000000;overflow:auto;">
-	<ul id="selected_driver" style="display:none;">
-		<!-- Will be filled with current driver automagically -->
-	</ul>
-	<ul>
-		<% @drivers.each do |driver| %>
-			<li id="driver<%=driver.id%>"><a href="javascript:map.setCenter(drivers[<%=driver.id%>]['marker'].getLatLng(), 14);showMarker(drivers[<%=driver.id%>]['location'], <%=driver.id%>);" ondblclick="double_click_driver(<%=driver.id%>);return false;"><%= driver.person.full_name %></a> (<%= driver.current_passengers_number %>/<%= driver.number_passengers %>)</li>
-		<% end %>
-	</ul>
-	<div style="padding:2px;margin-top:20px;">
-		<a href="javascript:displayMessage('filters_help');"><strong>Where did they go?</strong></a>
+<div class="page-content">
+	<div id="drivers" class="person-list-container">
+		<h3 id="drivers_header" class="person-list-container-header"><%=@drivers.size%> Drivers - <span id="spaces_remaining"><%=@spaces-@riders_done%></span>/<%=@spaces%> Seats</h3>
+		<div id="drivers_none" class="person-list-container-header person-list-container-header--red">No Driver Selected<br /><a href="javascript:displayMessage('driver_help');">How do I select a driver?</a></div>
+		<ul id="selected_driver" style="display:none;">
+			<!-- Will be filled with current driver -->
+		</ul>
+		<ul>
+			<% @drivers.each do |driver| %>
+				<li id="driver<%=driver.id%>"><a href="javascript:map.setCenter(drivers[<%=driver.id%>]['marker'].getLatLng(), 14);showMarker(drivers[<%=driver.id%>]['location'], <%=driver.id%>);" ondblclick="double_click_driver(<%=driver.id%>);return false;"><%= driver.person.full_name %></a> (<%= driver.current_passengers_number %>/<%= driver.number_passengers %>)</li>
+			<% end %>
+		</ul>
+		<div style="padding:2px;margin-top:20px;">
+			<a href="javascript:displayMessage('filters_help');"><strong>Where did they go?</strong></a>
+		</div>
 	</div>
-</div>
-<h3 id="riders_header" style="position:absolute;left:255px;top:100px;padding:2px;border:1px solid #000000;"><%=@riders.size%> Riders - (<span id="riders_remaining"><%=@riders.size - @riders_done%></span> Unassigned)</h3>
-<div id="riders" style="position:absolute;left:255px;top:129px;bottom:40px;width:244px;border:1px solid #000000;overflow:auto;">
-	<ul id="selected_riders" style="display:none;">
-		<!-- Will be filled with riders automagically -->
-	</ul>
-	<ul>
-		<% @riders.each do |rider| %>
-			<li id="rider<%=rider.id%>"><%= image_tag("check.png", alt: "Done", title: "This person has already been assigned.") if rider.driver_ride_id != 0 %><a href="javascript:map.setCenter(riders[<%=rider.id%>]['marker'].getLatLng(), 14);showMarker(riders[<%=rider.id%>]['location'], <%=rider.id%>);" ondblclick="double_click_rider(<%=rider.id%>);return false;"><%= rider.person.full_name %></a> (<%= rider.city %>)</li>
-		<% end %>
-	</ul>
-	<div style="padding:2px;margin-top:20px;">
-		<a href="javascript:displayMessage('filters_help');"><strong>Where did they go?</strong></a>
+	<div id="riders" class="person-list-container">
+		<h3 id="riders_header" class="person-list-container-header"><%=@riders.size%> Riders - (<span id="riders_remaining"><%=@riders.size - @riders_done%></span> Unassigned)</h3>
+		<ul id="selected_riders" style="display:none;">
+			<!-- Will be filled with riders automagically -->
+		</ul>
+		<ul>
+			<% @riders.each do |rider| %>
+				<li id="rider<%=rider.id%>"><%= image_tag("check.png", alt: "Done", title: "This person has already been assigned.") if rider.driver_ride_id != 0 %><a href="javascript:map.setCenter(riders[<%=rider.id%>]['marker'].getLatLng(), 14);showMarker(riders[<%=rider.id%>]['location'], <%=rider.id%>);" ondblclick="double_click_rider(<%=rider.id%>);return false;"><%= rider.person.full_name %></a> (<%= rider.city %>)</li>
+			<% end %>
+		</ul>
+		<div style="padding:2px;margin-top:20px;">
+			<a href="javascript:displayMessage('filters_help');"><strong>Where did they go?</strong></a>
+		</div>
 	</div>
-</div>
-<div id="options_box_departure_time" style="position:absolute;z-index:100;left:5px;bottom:37px;border:1px solid #000000;border-bottom:none;width:429px;height:60px;background-color:#ffffff;display:none;">
-	<form action="javascript:updateDepartureTime();">
-		<table class="room">
-			<tr>
-				<th colspan="2">Earliest</th>
-				<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Latest</th>
-				<th><a href="javascript:closeDepartureTime();">X</a></th>
-			</tr>
-			<tr>
-				<td><img src="<%= asset_path "check.png" %>" alt="clock" style="width:25px;height:25px;" />&nbsp;<select name="options_box_departure_time_time1_hour" id="options_box_departure_time_time1_hour" onchange="updateDepartureTime1(true);"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select><select name="options_box_departure_time_time1_minute" id="options_box_departure_time_time1_minute" onChange="updateDepartureTime1(true);"><option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select><select name="options_box_departure_time_time1_ampm" id="options_box_departure_time_time1_ampm" onchange="updateDepartureTime1(true);"><option value="0">AM</option><option value="12">PM</option></select></td>
-				<td><input type="checkbox" name="options_box_departure_time_use1" id="options_box_departure_time_use1" onclick="updateDepartureTime1(false);" /></td>
-				<td><img src="<%= asset_path "check.png" %>" alt="clock" style="width:25px;height:25px;" />&nbsp;<select name="options_box_departure_time_time2_hour" id="options_box_departure_time_time2_hour" onchange="updateDepartureTime2(true);"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select><select name="options_box_departure_time_time2_minute" id="options_box_departure_time_time2_minute" onChange="updateDepartureTime2(true);"><option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select><select name="options_box_departure_time_time2_ampm" id="options_box_departure_time_time2_ampm" onchange="updateDepartureTime2(true);"><option value="0">AM</option><option value="12">PM</option></select></td>
-				<td><input type="checkbox" name="options_box_departure_time_use2" id="options_box_departure_time_use2" onclick="updateDepartureTime2(false);" /></td>
-			</tr>
-		</table>
-	</form>
-</div>
-<div id="options_box_availability" style="position:absolute;z-index:100;left:253px;bottom:37px;border:1px solid #000000;border-bottom:none;width:246px;height:115px;background-color:#ffffff;display:none;">
-	<form action="javascript:updateAvailability();">
-		<table class="room">
-			<tr>
-				<th>Show and Hide</th>
-				<th><a href="javascript:closeAvailability();">X</a></th>
-			</tr>
-			<tr>
-				<td>Show riders without a ride and drivers with open seats:</td>
-				<td><input type="checkbox" name="options_box_availability_available" id="options_box_availability_available" checked="checked" onclick="updateList();" /></td>
-			</tr>
-			<tr>
-				<td>Show riders with a ride and drivers with a full car:</td>
-				<td><input type="checkbox" name="options_box_availability_assigned" id="options_box_availability_assigned" onclick="updateList();" /></td>
-			</tr>
-		</table>
-	</form>
-</div>
-<!--<div id="options" >-->
-	<table id="options" class="room" style="position:absolute;left:6px;bottom:5px;width:495px;height:30px;">
+	<div id="map"></div>
+	<div id="options_box_departure_time" style="position:absolute;z-index:100;left:0px;bottom:28px;border:1px solid #000000;border-bottom:none;width:470px;padding-bottom:8px;background-color:#ffffff;display:none;">
+		<form action="javascript:updateDepartureTime();">
+			<table class="room">
+				<tr>
+					<th>Earliest</th>
+					<th>Latest</th>
+					<th><a href="javascript:closeDepartureTime();">X</a></th>
+				</tr>
+				<tr>
+					<td>
+						<%= fa_icon "check lg", class: "text-green" %>
+						<%= select_tag "options_box_departure_time_time1_hour", options_for_select(1..12), {onchange: "updateDepartureTime1(true);"} %>
+						<%= select_tag "options_box_departure_time_time1_minute", options_for_select(['00',15,30,45]), {onchange: "updateDepartureTime1(true);"} %>
+						<%= select_tag "options_box_departure_time_time1_ampm", '<option value="0">AM</option><option value="12">PM</option>'.html_safe, {onchange: "updateDepartureTime1(true);"} %>
+						<%= check_box_tag "options_box_departure_time_use1", {onchange: "updateDepartureTime1(false);"} %>
+					</td>
+					<!--<td>
+					</td>-->
+					<td>
+						<%= fa_icon "check lg", class: "text-green" %>
+						<%= select_tag "options_box_departure_time_time2_hour", options_for_select(1..12), {onchange: "updateDepartureTime2(true);"} %>
+						<%= select_tag "options_box_departure_time_time2_minute", options_for_select(['00',15,30,45]), {onchange: "updateDepartureTime2(true);"} %>
+						<%= select_tag "options_box_departure_time_time2_ampm", '<option value="0">AM</option><option value="12">PM</option>'.html_safe, {onchange: "updateDepartureTime2(true);"} %>
+						<%= check_box_tag "options_box_departure_time_use2", {onchange: "updateDepartureTime2(false);"} %>
+					</td>
+					<td>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div id="options_box_availability" style="position:absolute;z-index:100;left:248px;bottom:28px;border:1px solid #000000;border-bottom:none;width:247px;height:115px;background-color:#ffffff;display:none;">
+		<form action="javascript:updateAvailability();">
+			<table class="room">
+				<tr>
+					<th>Show and Hide</th>
+					<th><a href="javascript:closeAvailability();">X</a></th>
+				</tr>
+				<tr>
+					<td>Show riders without a ride and drivers with open seats:</td>
+					<td><input type="checkbox" name="options_box_availability_available" id="options_box_availability_available" checked="checked" onclick="updateList();" /></td>
+				</tr>
+				<tr>
+					<td>Show riders with a ride and drivers with a full car:</td>
+					<td><input type="checkbox" name="options_box_availability_assigned" id="options_box_availability_assigned" onclick="updateList();" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<table id="options" class="room" style="position:absolute;bottom:-2px;width:497px;height:30px;">
 		<tr>
 			<td id="options_departure_time"><a href="javascript:showOption('departure_time');">Departure Time <img src="<%= asset_path "up_arrow.png" %>" alt="arrow" /></a></td>
 			<td id="options_availability" style="background-color:#bbffbb;"><a href="javascript:showOption('availability');">Show and Hide <img src="<%= asset_path "up_arrow.png" %>" alt="arrow" style="height:12px;width:12px;vertical-align:middle;" /></a></td>
 		</tr>
 	</table>
-<!--</div>-->
+</div>
 <!--<div id="copyright" style="position:absolute;left:504px;bottom:5px;right:5px;height:17px;border:1px solid #000000;padding:2px;font-size:13px;text-align:center;">&copy;2009-2011 USCM</div>-->
 
 
