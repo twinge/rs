@@ -67,4 +67,27 @@ class EventsController < ApplicationController
     redirect_to event_path(params[:id])
   end
 
+  def email
+    @event = current_event
+  end
+
+  def submit_email
+    @event = current_event
+    @drivers = @event.drivers
+
+    @event.email_content = params[:content]
+    @event.save!
+
+    @event.email_content = @event.email_content.gsub("\n", '<br />') if !@event.email_content.nil?
+
+    @drivers.each do |driver|
+      Email.car(driver.id).deliver
+    end
+    @notice = 'Emails successfully sent.'
+  end
+
+  def current_event
+    Event.where(conference_id: params[:id]).first
+  end
+
 end
