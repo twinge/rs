@@ -4,12 +4,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   def self.application_name
-    'RS'
-  end
-
-  def current_event
-    session[:conference_id] = params[:conference_id] if params[:conference_id]
-
-    @current_event ||= Event.where(:conference_id => session[:conference_id]).first if session[:conference_id]
+    'RideShare'
   end
 end

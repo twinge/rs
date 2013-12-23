@@ -1,6 +1,7 @@
-class RidesController < ApplicationController
+class EventsController < ApplicationController
 
-  def index
+  def show
+    current_event = Event.where(conference_id: params[:id]).first
     if current_event.nil?
 		  render :text => 'No registrants from your conference have registered with Rideshare yet.' and return
     else
@@ -60,6 +61,10 @@ class RidesController < ApplicationController
       @help_rides = Ride.where(:latitude => 0, :longitude => 0, :event_id => current_event.id).includes(:person)
       @message = true if @help_rides.size > 0
     end
+  end
+
+  def login
+    redirect_to event_path(params[:id])
   end
 
 end
