@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
 
   def show
-    current_event = Event.where(conference_id: params[:id]).first
+    current_event = Event.find(params[:id])
     if current_event.nil?
 		  render :text => 'No registrants from your conference have registered with Rideshare yet.' and return
     else
@@ -64,15 +64,16 @@ class EventsController < ApplicationController
   end
 
   def login
-    redirect_to event_path(params[:id])
+    event = Event.where(conference_id: params[:id]).first
+    redirect_to event
   end
 
   def email
-    @event = current_event
+    @event = Event.find(params[:id])
   end
 
   def submit_email
-    @event = current_event
+    @event = Event.find(params[:id])
     @drivers = @event.drivers
 
     @event.email_content = params[:content]
@@ -84,10 +85,6 @@ class EventsController < ApplicationController
       Email.car(driver.id).deliver
     end
     @notice = 'Emails successfully sent.'
-  end
-
-  def current_event
-    Event.where(conference_id: params[:id]).first
   end
 
 end
