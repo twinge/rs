@@ -5,6 +5,8 @@ class Ride < ActiveRecord::Base
 	belongs_to :event
 	has_many :rides, :foreign_key => "driver_ride_id"
 	
+	scope :drivers, -> { where(:drive_willingness => 1).includes(:person) }
+
 	def self.drivers_by_event_id(event_id)
 		result = Ride.where('rideshare_ride.drive_willingness in (1, 2, 3)').
 			where('rideshare_ride.event_id' => event_id).
