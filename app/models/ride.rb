@@ -5,29 +5,11 @@ class Ride < ActiveRecord::Base
 	belongs_to :event
 	has_many :rides, :foreign_key => "driver_ride_id"
 	
-	scope :drivers, -> { where(:drive_willingness => 1).includes(:person) }
+	scope :drivers, -> { where('drive_willingness in (1,2,3)').includes(:person) }
+	scope :active_drivers, -> { where(drive_willingness: 1).includes(:person) }
+	scope :hidden_drivers, -> { where(drive_willingness: 2).includes(:person) }
+	scope :passengers, -> { where(drive_willingness: 0).includes(:person) }
 
-	def self.drivers_by_event_id(event_id)
-		result = Ride.where('rideshare_ride.drive_willingness in (1, 2, 3)').
-			where('rideshare_ride.event_id' => event_id).
-			includes(:person)
-		result
-	end
-	
-	def self.riders_by_event_id(event_id)
-		result = where(:drive_willingness => 0).
-      where(:event_id => event_id).
-       includes(:person)
-    result
-	end
-	
-	def self.hidden_drivers_by_event_id(event_id)
-		result = where(:drive_willingness => 2).
-      where(:event_id => event_id).
-      includes(:person)
-    result
-	end
-	
 	def current_passengers_number
 		return nil unless drive_willingness.between?(1, 3)
 		current_passengers.length

@@ -5,9 +5,9 @@ class EventsController < ApplicationController
     if current_event.nil?
 		  render :text => 'No registrants from your conference have registered with Rideshare yet.' and return
     else
-      @drivers = Ride.drivers_by_event_id(current_event.id)
-      @riders = Ride.riders_by_event_id(current_event.id)
-      @hidden_rides = Ride.hidden_drivers_by_event_id(current_event.id)
+      @drivers = current_event.rides.drivers
+      @riders = current_event.rides.passengers
+      @hidden_rides = current_event.rides.hidden_drivers
 
       if @riders.size == 0 || @drivers.size == 0
         redirect_to :action => :empty
@@ -74,7 +74,7 @@ class EventsController < ApplicationController
 
   def submit_email
     @event = Event.find(params[:id])
-    @drivers = @event.drivers
+    @drivers = @event.rides.active_drivers
 
     @event.email_content = params[:content]
     @event.save!
